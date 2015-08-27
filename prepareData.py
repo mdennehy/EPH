@@ -24,12 +24,20 @@ import json
 import csv
 
 if __name__ == '__main__':
-    # Basic sanity checks
     if len(sys.argv) != 2:
         print "Usage: prepareData.py filename.txt\n"
         exit(1)
 
-    datafile = sys.argv[1].lower()
+    datafile = sys.argv[1]
 
-# 1984 Hugo Ballot data format
-# "voter","cat","postdate","gotdate","title","numvotes","author","publisher"
+    # 1984 Hugo Ballot data format
+    # "voter","cat","postdate","gotdate","title","numvotes","author","publisher"
+    headers=['voter','cat','postdate','gotdate','title','numvotes','author','publisher']
+
+    with open(datafile,'rU') as csvfile:
+        reader=csv.DictReader(csvfile,headers)
+        for row in reader:
+            for h in headers:
+                print (h+' '+row[h])
+
+
