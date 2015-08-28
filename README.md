@@ -1,6 +1,8 @@
 # EPH
 Implementation of E Pluribus Hugo (and testing)
 
+-----
+
 http://sasquan.org/business-meeting/agenda/#epluribus
 
 ```
@@ -9,7 +11,8 @@ category the five eligible nominees receiving the most nominations. If there
 is a tie including fifth place, all the tied eligible nominees shall be
 listed. determined by the process described in section 3.A.
 ```
-Insert new section 3.A after Section 3.8 as follows:
+*Insert new section 3.A after Section 3.8 as follows:*
+
 ```
 Section 3.A: Finalist Selection Process
 
@@ -65,11 +68,12 @@ remaining original finalists who have been notified shall be removed as a
 result of this rerun. The new finalist(s) shall be merged with the original
 finalists, extending the final ballot if necessary.
 ```
+-----
 
-Tests to try:
+## Tests to try:
 
 http://www.antipope.org/charlie/blog-static/2015/08/bad-puppies-no-awards.html#comment-1978724
-```> If I were being Evil...
+> If I were being Evil...
 That is in fact a valid question you're raising. The test is: can you sufficiently game the EPH system (assuming you have perfectly loyal minions) to control a statistically significant portion of the outcome that you should not be able to control, ie. if your group makes up 20% of the nominators, can you control 40% or more of the outcome?
 
 1. I need to go do the math myself to make sure that 40% is the right threshold, I'm just using a POMA estimate there.
@@ -83,10 +87,13 @@ Oh, and DeMarquis, same story - it's a valid question that's readily studied usi
 
 The great thing in both your cases is that you can actually get an answer. No
 hand-waving needed. Just actually run the simulations or the tests with the
-data and look at the outcomes.```
+data and look at the outcomes.
+
+-----
 
 http://file770.com/?p=24533&cpage=19#comment-328182
-```> Hey Mark,
+
+> Hey Mark,
 > I don’t know if we’re in disagreement, but I didn’t understand what point you were making in your response. Simulations are *fantastic*. But a basic understanding of the EPH model gives us enough to know how some relatively simple datasets would pan out, and that’s valuable too.
 
 Eh, you’re kindof blurring the lines a little – by looking at the underlying algorithm you can mathematically predict where the breaking points would be… but that’s functionally the same as running simulations (and if you wanted to test for sensitivity to starting conditions you usually wind up doing simulation for monte carlo analysis anyway).
@@ -118,10 +125,13 @@ But is that right? Again, we can do an sensitivity analysis and get an actual nu
 
 Er, that’s just wrong. I mean, we’ve never seen half the things that this entire field of literature is talking about, but that doesn’t mean we can’t simulate them 😀
 And simulation often finds completely new things humans have never thought of
-before – the memristor for example.```
+before – the memristor for example.
+
+-----
 
 http://file770.com/?p=24505&cpage=11#comment-329097
-```> 1: Oh, and BTW, EPH is still utterly gameable, even by outsiders. Short version:
+
+> 1: Oh, and BTW, EPH is still utterly gameable, even by outsiders. Short version:
 > A: Put together a slate of your preferred nominees
 > B: Have a web site where your supporters can go to get their Ballot
 > C: Every time someone goes there, generate a new ballot, with one random pick from each category
@@ -129,4 +139,4 @@ http://file770.com/?p=24505&cpage=11#comment-329097
 > Once EPH passes, I’ll run some simulations to see which “size” ballot is best. EPH privileges 1 vote ballots, so my starting assumption is that 1 vote’s best, but it will be no problem to run the sims.
 
 Go for it! Math is always neat and you can always have someone else check your
-results!```
+results!
