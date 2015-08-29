@@ -22,12 +22,14 @@ import sys
 import string
 import json
 import csv
+import numpy
 
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: prepareData.py filename.txt\n"
         exit(1)
 
+    nominations = []
     datafile = sys.argv[1]
 
     # 1984 Hugo Ballot data format
@@ -37,7 +39,32 @@ if __name__ == '__main__':
     with open(datafile,'rU') as csvfile:
         reader=csv.DictReader(csvfile,headers)
         for row in reader:
-            for h in headers:
-                print (h+' '+row[h])
+            nominations.append({
+                'voter'      : row['voter'],
+                'preference' : row['numvotes'],
+                'title'      : row['title'],
+                'author'     : row['author'],
+                'publisher'  : row['publisher'],
+                'cat'        : row['cat'],
+                'postdate'   : row['postdate'],
+                'gotdate'    : row['gotdate']
+            })
+
+    similarityMatrix = numpy.zeros((len(nominations),len(nominations)))
+    responsibilityMatrix = numpy.zeros((len(nominations),len(nominations)))
+    availabilityMatrix = numpy.zeros((len(nominations),len(nominations)))
+    dampingFactor = 0.5
+
+    for iterations in range(0, 2):
+        oldResponsibilityMatrix = numpy.copy(responsibilityMatrix)
+        tempMatrix1 = availabilityMatrix + similarityMatrix
+        tempMax1 = numpy.amax(tempMatrix1, axis=1)
+        tempArgmax1 = numpy.argmax(tempMatrix1, axis=1)
+        for i in range(0, len(nominations)):
+            tempMatrix1[i,tempArgmax1[i]] = numpy.finfo(tempMatrix1.dtype).min
+        responsibilityMatrix = similarityMatrix - tempMatrix1
+
+    print responsibilityMatrix
+
 
 

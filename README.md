@@ -74,6 +74,7 @@ finalists, extending the final ballot if necessary.
 
 http://www.antipope.org/charlie/blog-static/2015/08/bad-puppies-no-awards.html#comment-1978724
 > If I were being Evil...
+
 That is in fact a valid question you're raising. The test is: can you sufficiently game the EPH system (assuming you have perfectly loyal minions) to control a statistically significant portion of the outcome that you should not be able to control, ie. if your group makes up 20% of the nominators, can you control 40% or more of the outcome?
 
 1. I need to go do the math myself to make sure that 40% is the right threshold, I'm just using a POMA estimate there.
