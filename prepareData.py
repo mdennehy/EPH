@@ -24,51 +24,7 @@ import json
 import csv
 import numpy
 
-if __name__ == '__main__':
-    if len(sys.argv) != 2:
-        print "Usage: prepareData.py filename.txt\n"
-        exit(1)
-
-    nominations = []
-    datafile = sys.argv[1]
-
-    # 1984 Hugo Ballot data format
-    # "voter","cat","postdate","gotdate","title","numvotes","author","publisher"
-    headers=['voter','cat','postdate','gotdate','title','numvotes','author','publisher']
-
-    with open(datafile,'rU') as csvfile:
-        reader=csv.DictReader(csvfile,headers)
-        for row in reader:
-            nominations.append({
-                'voter'      : row['voter'],
-                'preference' : row['numvotes'],
-                'title'      : row['title'],
-                'author'     : row['author'],
-                'publisher'  : row['publisher'],
-                'cat'        : row['cat'],
-                'postdate'   : row['postdate'],
-                'gotdate'    : row['gotdate']
-            })
-
-    #numOfVotes = len(nominations)
-    #similarityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
-
-
-    with open('reference/ToyProblemSimilarities.txt','rU') as sfile:
-        sims=csv.DictReader(sfile,fieldnames=['x','y','s'])
-        numOfVotes=0
-        for row in sims:
-            numOfVotes += 1
-        sfile.seek(0)
-        similarityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
-        for row in sims:
-            similarityMatrix[int(row['x']),int(row['y'])] = float(row['s'])
-            similarityMatrix[int(row['y']),int(row['x'])] = float(row['s'])
-        for i in range(0, numOfVotes):
-            similarityMatrix[i,i]=-15.561256
-
-    print similarityMatrix
-
+def apCluster(similarityMatrix):
     responsibilityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
     availabilityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
     evidenceMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
@@ -86,6 +42,8 @@ if __name__ == '__main__':
     iterations = 0
     # for iterations in range(0, 100):
     while (stableCount < 10) and (iterations < 2000):
+        sys.stdout.write('.')
+        sys.stdout.flush()
         # compute responbilities
         oldResponsibilityMatrix = numpy.copy(responsibilityMatrix)
         tmpMatrix = availabilityMatrix + similarityMatrix
@@ -143,13 +101,58 @@ if __name__ == '__main__':
 
         iterations += 1
 
-
-    print iterations
-    print stableCount
-
-
     evidenceDiagonal = evidenceMatrix.diagonal(offset=0)
     exemplars = numpy.nonzero(evidenceDiagonal > 0)[1]
     totalDetectedExemplars = numpy.size(exemplars,axis=1)
     exemplarAssignments = numpy.argmax(evidenceMatrix, axis=1)
 
+    return totalDetectedExemplars,exemplarAssignments
+
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print "Usage: prepareData.py filename.txt\n"
+        exit(1)
+
+    nominations = []
+    datafile = sys.argv[1]
+
+    # 1984 Hugo Ballot data format
+    # "voter","cat","postdate","gotdate","title","numvotes","author","publisher"
+    headers=['voter','cat','postdate','gotdate','title','numvotes','author','publisher']
+
+    with open(datafile,'rU') as csvfile:
+        reader=csv.DictReader(csvfile,headers)
+        for row in reader:
+            nominations.append({
+                'voter'      : row['voter'],
+                'preference' : row['numvotes'],
+                'title'      : row['title'],
+                'author'     : row['author'],
+                'publisher'  : row['publisher'],
+                'cat'        : row['cat'],
+                'postdate'   : row['postdate'],
+                'gotdate'    : row['gotdate']
+            })
+
+    #numOfVotes = len(nominations)
+    #similarityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
+
+
+    with open('reference/ToyProblemSimilarities.txt','rU') as sfile:
+        sims=csv.DictReader(sfile,fieldnames=['x','y','s'])
+        numOfVotes=0
+        for row in sims:
+            numOfVotes += 1
+        sfile.seek(0)
+        similarityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
+        for row in sims:
+            similarityMatrix[int(row['x']),int(row['y'])] = float(row['s'])
+            similarityMatrix[int(row['y']),int(row['x'])] = float(row['s'])
+        for i in range(0, numOfVotes):
+            similarityMatrix[i,i]=-15.561256
+
+    numberOfExemplars, exemplarIndices = apCluster(similarityMatrix)
+
+    print numberOfExemplars
+    print exemplarIndices
