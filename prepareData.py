@@ -71,13 +71,21 @@ if __name__ == '__main__':
 
     responsibilityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
     availabilityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
+    evidenceMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
     dampingFactor = 0.9
+    stableCount = 0
 
     # Remove degeneracies
     similarityMatrix = similarityMatrix + 1e-12*numpy.random.standard_normal((numOfVotes,numOfVotes))*(numpy.amax(similarityMatrix)-numpy.amin(similarityMatrix));
 
+    maxSimilarities = numpy.amax(similarityMatrix, axis=1)
+    precalcResponsibilityDiagonal = numpy.zeros((numOfVotes))
+    for i in range(0, numOfVotes):
+        precalcResponsibilityDiagonal[i] = similarityMatrix[i,i] - maxSimilarities[i]
 
-    for iterations in range(0, 100):
+    iterations = 0
+    # for iterations in range(0, 100):
+    while (stableCount < 10) and (iterations < 2000):
         # compute responbilities
         oldResponsibilityMatrix = numpy.copy(responsibilityMatrix)
         tmpMatrix = availabilityMatrix + similarityMatrix
@@ -99,6 +107,8 @@ if __name__ == '__main__':
         # R(i,k) = S(i,k) - nextLargestMaximum(A(i,k) + S(i,k))
         for i in range(0, numOfVotes):
             responsibilityMatrix[i,tmpMaxIndices[i]] = similarityMatrix[i,tmpMaxIndices[i]] - tmpMax2[i]
+            responsibilityMatrix[i,i] = precalcResponsibilityDiagonal[i]
+
 
         # dampen responsibilities
         responsibilityMatrix = ((1-dampingFactor) * responsibilityMatrix) + (dampingFactor * oldResponsibilityMatrix)
@@ -123,27 +133,23 @@ if __name__ == '__main__':
         #  dampen availabilities
         availabilityMatrix = ((1-dampingFactor) * availabilityMatrix) + (dampingFactor * oldAvailabilityMatrix)
 
-# the combined evidence r(i, k)+a(i, k) is stored in the NxN
-# matrix E, the number of exemplars is stored in K, and the indices of the exemplars for the
-# data points are stored in the N-vector idx (point i is assigned to the data point with index idx(i).)
+        oldEvidenceMatrix = evidenceMatrix
+        evidenceMatrix = responsibilityMatrix + availabilityMatrix
 
-    evidenceMatrix = responsibilityMatrix + availabilityMatrix
+        if numpy.array_equal(oldEvidenceMatrix, evidenceMatrix):
+            stableCount += 1
+        else:
+            stableCount = 0
+
+        iterations += 1
+
+
+    print iterations
+    print stableCount
+
 
     evidenceDiagonal = evidenceMatrix.diagonal(offset=0)
-    I = numpy.nonzero(evidenceDiagonal > 0)[1]
-
-    K = numpy.size(I,axis=1)
-
-    G = numpy.take(similarityMatrix,I,axis=1)
-    tmp = numpy.amax(G,axis=1)
-    c = numpy.argmax(G,axis=1)
-
-    print G
-    print tmp
-    print c
-# c(I)=1:K;
-    c[0][I] = range(K)
-# idx=I(c); % Assignments
-    idx=I[c]
-
+    exemplars = numpy.nonzero(evidenceDiagonal > 0)[1]
+    totalDetectedExemplars = numpy.size(exemplars,axis=1)
+    exemplarAssignments = numpy.argmax(evidenceMatrix, axis=1)
 
