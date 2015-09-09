@@ -18,3 +18,26 @@
 #   51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.                #
 ################################################################################
 
+import sys
+import string
+import json
+import csv
+import numpy
+
+if __name__ == '__main__':
+    if len(sys.argv) != 2:
+        print "Usage: runEPH.py filename.json\n"
+        exit(1)
+
+    nominations = []
+    datafile = sys.argv[1]
+
+    with open(datafile) as data_file:
+        nominations = json.load(data_file)
+
+    print len(nominations)
+
+    for nomination in nominations:
+        print nomination
+        exit
+

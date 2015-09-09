@@ -135,6 +135,9 @@ if __name__ == '__main__':
                 'gotdate'    : row['gotdate']
             })
 
+    with open('data.json','w') as jsonfile:
+        json.dump(nominations, jsonfile)
+
     #numOfVotes = len(nominations)
     #similarityMatrix = numpy.matrix(numpy.zeros((numOfVotes,numOfVotes)))
 
