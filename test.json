@@ -1,0 +1,71 @@
+{
+  "works": [
+    {
+      "id": 1,
+      "title": "the dark forest"
+    },
+    {
+      "id": 2,
+      "title": "the goblin emporer"
+    },
+    {
+      "id":3,
+      "title":"The Day the World Turned Upside Down"
+    },
+    {
+      "id":4,
+      "title":"The Triple Sun"
+    }
+  ],
+  "categories": [
+    {
+      "id": 1,
+      "name": "Best Novel"
+    },
+    {
+      "id": 2,
+      "name": "Best Novelette"
+    }
+  ],
+  "ballots": [
+    {
+      "category": 1,
+      "votes": [
+        {
+          "preference": 1,
+          "work": 2
+        },
+        {
+          "preference": 2,
+          "work": 1
+        }
+      ]
+    },
+    {
+      "category": 1,
+      "votes": [
+        {
+          "preference": 2,
+          "work": 2
+        },
+        {
+          "preference": 1,
+          "work": 1
+        }
+      ]
+    },
+    {
+      "category": 2,
+      "votes": [
+        {
+          "preference": 1,
+          "work": 3
+        },
+        {
+          "preference": 2,
+          "work": 4
+        }
+      ]
+    }
+  ]
+}
