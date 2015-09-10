@@ -45,9 +45,18 @@
       "category": 1,
       "votes": [
         {
-          "preference": 2,
+          "preference": 1,
           "work": 2
         },
+        {
+          "preference": 2,
+          "work": 1
+        }
+      ]
+    },
+    {
+      "category": 1,
+      "votes": [
         {
           "preference": 1,
           "work": 1
