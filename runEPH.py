@@ -25,6 +25,71 @@ import json
 import csv
 import numpy
 
+def calculationPhase():
+# (1) Calculation Phase: First, the total number of nominations (the number of
+# ballots on which each nominee appears) from all eligible ballots shall be
+# tallied for each remaining nominee.
+    total_number_of_nominations={}
+
+    for ballot in (b for b in ballots if b['category']==category):
+        for vote in ballot['votes']:
+            if vote['work'] not in total_number_of_nominations:
+                total_number_of_nominations[vote['work']] = 1
+            else:
+                total_number_of_nominations[vote['work']] += 1
+
+# Next, a single “point” shall be assigned to each nomination ballot. That
+# point shall be divided equally among all remaining nominees on that
+# ballot. Finally, all points from all nomination ballots shall be totaled
+# for each nominee in that category.
+
+    nominee_points_total={}
+
+    for ballot in (b for b in ballots if b['category']==category):
+        points_per_vote = 1.0 / len(ballot['votes'])
+        for vote in ballot['votes']:
+            if vote['work'] not in nominee_points_total:
+                nominee_points_total[vote['work']] = points_per_vote
+            else:
+                nominee_points_total[vote['work']] += points_per_vote
+
+#  These two numbers, point total and number of nominations, shall be used
+#  in the Selection and Elimination Phases.
+
+    return total_number_of_nominations, nominee_points_total
+
+def selectionPhase(nominee_points_total):
+# (2) Selection Phase: The two nominees with the lowest point totals shall be
+# selected for comparison in the Elimination Phase. (See 3.A.3 for ties.)
+
+    selection_nominees = sorted(nominee_points_total, key=nominee_points_total.get)[0:2]
+    return selection_nominees
+
+# 3.A.3: Ties shall be handled as described below:
+# (1) During the Selection Phase, if two or more nominees are tied for the
+# lowest point total, all such nominees shall be selected for the Elimination
+# Phase.
+
+# (2) During the Selection Phase, if one nominee has the lowest point total and
+# two or more nominees are tied for the second-lowest point total, then all such
+# nominees shall be selected for the Elimination Phase.
+
+def eliminationPhase():
+    return
+# (3) Elimination Phase: Nominees chosen in the Selection Phase shall be
+# compared, and the nominee with the fewest number of nominations shall be
+# eliminated and removed from all ballots for the Calculation Phase of all
+# subsequent rounds. (See 3.A.3 for ties.)
+
+# 3.A.3: Ties shall be handled as described below:
+# (3) During the Elimination Phase, if two or more nominees are tied for the
+# fewest number of nominations, the nominee with the lowest point total at that
+# round shall be eliminated.
+
+# (4) During the Elimination Phase, if two or more nominees are tied for both
+# fewest number of nominations and lowest point total, then all such nominees
+# tied at that round shall be eliminated.
+
 if __name__ == '__main__':
     if len(sys.argv) != 2:
         print "Usage: runEPH.py filename.json\n"
@@ -66,9 +131,7 @@ if __name__ == '__main__':
 # listed. determined by the process described in section 3.A.
     targetNumberOfFinalists = 5
 
-
 # Section 3.A: Finalist Selection Process
-
 # 3.A.2: The phases described in 3.A.1 are repeated in order for each category
 # until the number of finalists specified in 3.8.1 remain. If elimination would
 # reduce the number of finalists to fewer than the number specified in section
@@ -81,73 +144,11 @@ if __name__ == '__main__':
 # 3.A.1: For each category, the finalist selection process shall be conducted as
 # elimination rounds consisting of three phases:
         for category in iter(categories):
-
-# (1) Calculation Phase: First, the total number of nominations (the number of
-# ballots on which each nominee appears) from all eligible ballots shall be
-# tallied for each remaining nominee.
-
             finalists = []
+            total_number_of_nominations, nominee_points_total = calculationPhase()
+            selectionPhase(nominee_points_total)
+            eliminationPhase()
 
-            total_number_of_nominations={}
-
-            for ballot in (b for b in ballots if b['category']==category):
-                for vote in ballot['votes']:
-                    if vote['work'] not in total_number_of_nominations:
-                        total_number_of_nominations[vote['work']] = 1
-                    else:
-                        total_number_of_nominations[vote['work']] += 1
-
-# Next, a single “point” shall be assigned to each nomination ballot. That
-# point shall be divided equally among all remaining nominees on that
-# ballot. Finally, all points from all nomination ballots shall be totaled
-# for each nominee in that category.
-
-            nominee_points_total={}
-
-            for ballot in (b for b in ballots if b['category']==category):
-                points_per_vote = 1.0 / len(ballot['votes'])
-                for vote in ballot['votes']:
-                    if vote['work'] not in nominee_points_total:
-                        nominee_points_total[vote['work']] = points_per_vote
-                    else:
-                        nominee_points_total[vote['work']] += points_per_vote
-
-#  These two numbers, point total and number of nominations, shall be used
-#  in the Selection and Elimination Phases.
-
-            print total_number_of_nominations
-            print nominee_points_total
-
-# (2) Selection Phase: The two nominees with the lowest point totals shall be
-# selected for comparison in the Elimination Phase. (See 3.A.3 for ties.)
-
-            selection_nominees = sorted(nominee_points_total, key=nominee_points_total.get)[0:2]
-            print selection_nominees
-
-# (3) Elimination Phase: Nominees chosen in the Selection Phase shall be
-# compared, and the nominee with the fewest number of nominations shall be
-# eliminated and removed from all ballots for the Calculation Phase of all
-# subsequent rounds. (See 3.A.3 for ties.)
-
-
-
-# 3.A.3: Ties shall be handled as described below:
-
-# (1) During the Selection Phase, if two or more nominees are tied for the
-# lowest point total, all such nominees shall be selected for the Elimination
-# Phase.
-
-# (2) During the Selection Phase, if one nominee has the lowest point total and
-# two or more nominees are tied for the second-lowest point total, then all such
-# nominees shall be selected for the Elimination Phase.
-
-# (3) During the Elimination Phase, if two or more nominees are tied for the
-# fewest number of nominations, the nominee with the lowest point total at that
-# round shall be eliminated.
-
-# (4) During the Elimination Phase, if two or more nominees are tied for both
-# fewest number of nominations and lowest point total, then all such nominees
-# tied at that round shall be eliminated.
 
 # 3.A.4: After the initial Award ballot is generated, if any finalist(s) are
 # removed for any reason, the finalist selection process shall be rerun as
