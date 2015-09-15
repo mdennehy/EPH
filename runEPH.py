@@ -22,6 +22,7 @@
 import sys
 import string
 import json
+import jsonschema
 import csv
 
 def calculationPhase(ballots):
@@ -139,6 +140,17 @@ if __name__ == '__main__':
     works = {}
     categories = {}
     ballots = []
+
+    schema = open("schema.json").read()
+    data = open(datafile).read()
+    print schema
+
+    try:
+        jsonschema.validate(json.loads(data), json.loads(schema))
+    except jsonschema.ValidationError as e:
+        print e.message
+    except jsonschema.SchemaError as e:
+        print e
 
     with open(datafile) as data_file:
         data = json.load(data_file)
