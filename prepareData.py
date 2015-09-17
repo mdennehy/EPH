@@ -24,6 +24,7 @@ import json
 import csv
 import numpy
 from fuzzywuzzy import fuzz
+import editdistance
 
 def apCluster(similarityMatrix):
     responsibilityMatrix = numpy.matrix(numpy.zeros((numOfWorks,numOfWorks)))
@@ -43,8 +44,8 @@ def apCluster(similarityMatrix):
     iterations = 0
     # for iterations in range(0, 100):
     while (stableCount < 10) and (iterations < 2000):
-        sys.stdout.write('.')
-        sys.stdout.flush()
+        #sys.stdout.write('.')
+        #sys.stdout.flush()
         # compute responbilities
         oldResponsibilityMatrix = numpy.copy(responsibilityMatrix)
         tmpMatrix = availabilityMatrix + similarityMatrix
@@ -106,6 +107,11 @@ def apCluster(similarityMatrix):
     exemplars = numpy.nonzero(evidenceDiagonal > 0)[1]
     totalDetectedExemplars = numpy.size(exemplars,axis=1)
     exemplarAssignments = numpy.argmax(evidenceMatrix, axis=1)
+
+    uniqueExemplars= set([])
+    for i in exemplars:
+        uniqueExemplars.add(i)
+    print uniqueExemplars
 
     return totalDetectedExemplars,exemplarAssignments
 
@@ -179,55 +185,33 @@ if __name__ == '__main__':
         c += 1
         output_categories[c] = category
 
-        titles = set([])
-        for nomination in nominations:
-            if int(nomination['category']) == c:
-                titles.add(nomination['title'].lower().strip())
+        titles = []
+        for nomination in (x for x in nominations if int(x['category']) == c):
+            titles.append(nomination['title'])
 
         numOfWorks = len(titles)
         similarityMatrix = numpy.matrix(numpy.zeros((numOfWorks,numOfWorks)))
 
         i = 0
         j = 0
-        for title in list(titles):
-            for title2 in list(titles):
-                similarityMatrix[i,j] = fuzz.ratio(title,title2)
+        for title in titles:
+            for title2 in titles:
+                #similarityMatrix[i,j] = fuzz.ratio(title,title2)
+                similarityMatrix[i,j] = editdistance.eval(title,title2)
                 j += 1
             i += 1
             j = 0
 
         similarityMatrix /= -100
 
+        numberOfExemplars, exemplarIndices = apCluster(similarityMatrix)
 
-    #numOfWorks = len(nominations)
-    #similarityMatrix = numpy.matrix(numpy.zeros((numOfWorks,numOfWorks)))
+        print exemplarIndices
+        i = 0
+        for title in titles:
+            print title + ' => ' + titles[exemplarIndices[i][0]]
+            i+=1
 
-
-#     with open('reference/ToyProblemSimilarities.txt','rU') as sfile:
-#         sims=csv.DictReader(sfile,fieldnames=['x','y','s'])
-#         numOfWorks=0
-#         for row in sims:
-#             numOfWorks += 1
-#         sfile.seek(0)
-#         similarityMatrix = numpy.matrix(numpy.zeros((numOfWorks,numOfWorks)))
-#         for row in sims:
-#             similarityMatrix[int(row['x']),int(row['y'])] = float(row['s'])
-#             similarityMatrix[int(row['y']),int(row['x'])] = float(row['s'])
-#         for i in range(0, numOfWorks):
-#             similarityMatrix[i,i]=-15.561256
-
-    numberOfExemplars, exemplarIndices = apCluster(similarityMatrix)
-
-    print numberOfExemplars
-    print exemplarIndices
-
-    works = set([])
-
-    for nomination in nominations:
-        works.add(nomination['title'])
-
-    #print nominations
 
     #with open('data.json','w') as jsonfile:
     #    json.dump(nominations, jsonfile)
-
